@@ -1,0 +1,578 @@
+object frmEDanismanSoruTanim: TfrmEDanismanSoruTanim
+  Left = 0
+  Top = 0
+  ClientHeight = 654
+  ClientWidth = 704
+  Caption = 'E-Dan'#305#351'man Soru Tan'#305'm'#305
+  BorderStyle = bsSingle
+  OldCreateOrder = False
+  BorderIcons = []
+  MonitoredKeys.Keys = <>
+  OnBeforeShow = UniFormBeforeShow
+  TextHeight = 15
+  object pnlData: TUniPanel
+    Left = 0
+    Top = 0
+    Width = 704
+    Height = 558
+    Hint = ''
+    Align = alClient
+    TabOrder = 0
+    Caption = ''
+    DesignSize = (
+      704
+      558)
+    object UniLabel8: TUniLabel
+      Left = 5
+      Top = 122
+      Width = 85
+      Height = 13
+      Hint = ''
+      Alignment = taRightJustify
+      AutoSize = False
+      Caption = 'A'#231#305'klama'
+      ParentFont = False
+      Font.Color = clDefault
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 4
+    end
+    object edDesc: TUniDBMemo
+      Left = 96
+      Top = 122
+      Width = 600
+      Height = 56
+      Hint = ''
+      DataField = 'soru_aciklama'
+      DataSource = dsSoru
+      ScrollBars = ssVertical
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 2
+      ClientEvents.ExtEvents.Strings = (
+        
+          'keyup=function keyup(sender, e, eOpts)'#13#10'{'#13#10'  var val = sender.ge' +
+          'tValue() ; '#13#10'  var pos = sender.inputEl.dom.selectionStart;'#13#10'  s' +
+          'ender.setValue(val.toLocaleUpperCase()); '#13#10'  sender.inputEl.dom.' +
+          'setSelectionRange(pos, pos);'#13#10'}')
+    end
+    object edsoru: TUniDBMemo
+      Left = 96
+      Top = 36
+      Width = 600
+      Height = 80
+      Hint = ''
+      DataField = 'soru_metni'
+      DataSource = dsSoru
+      ScrollBars = ssVertical
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 1
+      ClientEvents.ExtEvents.Strings = (
+        
+          'keyup=function keyup(sender, e, eOpts)'#13#10'{'#13#10'  var val = sender.ge' +
+          'tValue() ; '#13#10'  var pos = sender.inputEl.dom.selectionStart;'#13#10'  s' +
+          'ender.setValue(val.toLocaleUpperCase()); '#13#10'  sender.inputEl.dom.' +
+          'setSelectionRange(pos, pos);'#13#10'}')
+    end
+    object edAcikRiza: TUniDBCheckBox
+      Left = 366
+      Top = 11
+      Width = 250
+      Height = 17
+      Hint = ''
+      DataField = 'active'
+      DataSource = dsSoru
+      ValueChecked = 'E'
+      ValueUnchecked = 'H'
+      Caption = 'Aktif'
+      ParentFont = False
+      Font.Color = 13226752
+      Font.Style = [fsBold]
+      TabOrder = 0
+      ParentColor = False
+      Color = clBtnFace
+    end
+    object UniLabel1: TUniLabel
+      Left = 339
+      Top = 188
+      Width = 85
+      Height = 13
+      Hint = ''
+      Alignment = taRightJustify
+      AutoSize = False
+      Caption = 'Se'#231'enek '#350'ekli'
+      ParentFont = False
+      Font.Color = clDefault
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 5
+    end
+    object UniDBGrid1: TUniDBGrid
+      Left = 96
+      Top = 213
+      Width = 598
+      Height = 257
+      Hint = ''
+      TitleFont.OverrideDefaults = [ovFontHeight]
+      DataSource = dsSecenek
+      Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgRowSelect, dgConfirmDelete, dgAutoRefreshRow]
+      LoadMask.Message = 'Veri y'#252'kleniyor...'
+      EmptyText = 'Veri yok'
+      Anchors = [akLeft, akTop, akRight, akBottom]
+      Font.OverrideDefaults = [ovFontHeight]
+      ParentFont = False
+      TabOrder = 6
+      OnColumnSort = UniDBGrid1ColumnSort
+      Columns = <
+        item
+          FieldName = 'no'
+          Title.Caption = 'S'#305'ra No'
+          Title.Font.OverrideDefaults = [ovFontHeight]
+          Width = 64
+          Font.OverrideDefaults = [ovFontHeight]
+          Sortable = True
+        end
+        item
+          FieldName = 'secenek'
+          Title.Caption = 'Se'#231'enek'
+          Title.Font.OverrideDefaults = [ovFontHeight]
+          Width = 235
+          Font.OverrideDefaults = [ovFontHeight]
+          DisplayMemo = True
+        end
+        item
+          FieldName = 'sonuc'
+          Title.Caption = 'Sonu'#231
+          Title.Font.OverrideDefaults = [ovFontHeight]
+          Width = 280
+          Font.OverrideDefaults = [ovFontHeight]
+          DisplayMemo = True
+        end>
+    end
+    object btnSecenekEkle: TUniBitBtn
+      Left = 53
+      Top = 213
+      Width = 36
+      Height = 36
+      Hint = ''
+      Caption = ''
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 7
+      Images = MainMod.PrjImgList
+      ImageIndex = 18
+      OnClick = btnSecenekEkleClick
+    end
+    object btnSecenekSil: TUniBitBtn
+      Left = 53
+      Top = 297
+      Width = 36
+      Height = 36
+      Hint = ''
+      Caption = ''
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 8
+      Images = MainMod.PrjImgList
+      ImageIndex = 12
+      OnClick = btnSecenekSilClick
+    end
+    object btnSecenekDegistir: TUniBitBtn
+      Left = 53
+      Top = 255
+      Width = 36
+      Height = 36
+      Hint = ''
+      Caption = ''
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 9
+      Images = MainMod.PrjImgList
+      ImageIndex = 2
+      OnClick = btnSecenekDegistirClick
+    end
+    object UniLabel2: TUniLabel
+      Left = 5
+      Top = 36
+      Width = 85
+      Height = 13
+      Hint = ''
+      Alignment = taRightJustify
+      AutoSize = False
+      Caption = 'Soru Metni'
+      ParentFont = False
+      Font.Color = clDefault
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 10
+    end
+    object UniLabel3: TUniLabel
+      Left = 5
+      Top = 15
+      Width = 85
+      Height = 13
+      Hint = ''
+      Alignment = taRightJustify
+      AutoSize = False
+      Caption = 'Soru No'
+      ParentFont = False
+      Font.Color = clDefault
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 11
+    end
+    object edSoruNo: TUniDBEdit
+      Left = 96
+      Top = 9
+      Width = 236
+      Height = 22
+      Hint = ''
+      DataField = 'soru_no'
+      DataSource = dsSoru
+      CharCase = ecUpperCase
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 12
+      ClientEvents.ExtEvents.Strings = (
+        
+          'keyup=function keyup(sender, e, eOpts)'#13#10'{'#13#10'  var val = sender.ge' +
+          'tValue() ; '#13#10'  var pos = sender.inputEl.dom.selectionStart;'#13#10'  s' +
+          'ender.setValue(val.toLocaleUpperCase()); '#13#10'  sender.inputEl.dom.' +
+          'setSelectionRange(pos, pos);'#13#10'}')
+    end
+    object edSeceneksekli: TUniDBRadioGroup
+      Left = 430
+      Top = 179
+      Width = 266
+      Height = 33
+      Hint = ''
+      DataField = 'secenek_sekli'
+      DataSource = dsSoru
+      Caption = ''
+      TabOrder = 13
+      Items.Strings = (
+        'TEK SE'#199#304'M'
+        #199'OKLU SE'#199#304'M')
+      Columns = 2
+      Values.Strings = (
+        'CHECKBOX'
+        'RADIOBUTTON')
+    end
+    object UniLabel9: TUniLabel
+      Left = 5
+      Top = 188
+      Width = 85
+      Height = 13
+      Hint = ''
+      Alignment = taRightJustify
+      AutoSize = False
+      Caption = 'Fonksiyon'
+      ParentFont = False
+      Font.Color = clDefault
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 14
+    end
+    object edFonksiyon: TUniDBLookupComboBox
+      Left = 96
+      Top = 184
+      Width = 236
+      Height = 28
+      Hint = ''
+      ListField = 'function'
+      ListSource = dsFonks
+      KeyField = 'id'
+      ListFieldIndex = 0
+      DataField = 'func_id'
+      DataSource = dsSoru
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 15
+      Color = clWindow
+      ClientEvents.ExtEvents.Strings = (
+        
+          'keyup=function keyup(sender, e, eOpts)'#13#10'{'#13#10'  var val = sender.ge' +
+          'tValue() ; '#13#10'  var pos = sender.inputEl.dom.selectionStart;'#13#10'  s' +
+          'ender.setValue(val.toLocaleUpperCase()); '#13#10'  sender.inputEl.dom.' +
+          'setSelectionRange(pos, pos);'#13#10'}')
+      Style = csDropDown
+    end
+    object UniLabel10: TUniLabel
+      Left = 18
+      Top = 484
+      Width = 72
+      Height = 13
+      Hint = ''
+      Alignment = taRightJustify
+      AutoSize = False
+      Caption = 'Referanslar'
+      ParentFont = False
+      Font.Color = clDefault
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 16
+    end
+    object UniDBMemo1: TUniDBMemo
+      Left = 96
+      Top = 484
+      Width = 600
+      Height = 65
+      Hint = ''
+      DataField = 'referans'
+      DataSource = dsSoru
+      ScrollBars = ssVertical
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 17
+      ClientEvents.ExtEvents.Strings = (
+        
+          'keyup=function keyup(sender, e, eOpts)'#13#10'{'#13#10'  var val = sender.ge' +
+          'tValue() ; '#13#10'  var pos = sender.inputEl.dom.selectionStart;'#13#10'  s' +
+          'ender.setValue(val.toLocaleUpperCase()); '#13#10'  sender.inputEl.dom.' +
+          'setSelectionRange(pos, pos);'#13#10'}')
+    end
+  end
+  object pnlButtons: TUniPanel
+    Left = 0
+    Top = 558
+    Width = 704
+    Height = 96
+    Hint = ''
+    Align = alBottom
+    TabOrder = 1
+    Caption = ''
+    DesignSize = (
+      704
+      96)
+    object btnCancel: TUniBitBtn
+      Left = 600
+      Top = 54
+      Width = 96
+      Height = 36
+      Hint = ''
+      Caption = #304'ptal'
+      Anchors = [akRight, akBottom]
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 2
+      Images = MainMod.PrjImgList
+      ImageIndex = 5
+      OnClick = btnCancelClick
+    end
+    object btnPost: TUniBitBtn
+      Left = 498
+      Top = 54
+      Width = 96
+      Height = 36
+      Hint = ''
+      Caption = 'Kaydet'
+      Anchors = [akRight, akBottom]
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 1
+      Images = MainMod.PrjImgList
+      ImageIndex = 14
+      OnClick = btnPostClick
+    end
+    object pnlLog: TUniContainerPanel
+      Left = 1
+      Top = 1
+      Width = 702
+      Height = 45
+      Hint = ''
+      ParentColor = False
+      Align = alTop
+      TabOrder = 3
+      object UniLabel4: TUniLabel
+        Left = 12
+        Top = 6
+        Width = 96
+        Height = 13
+        Hint = ''
+        Alignment = taRightJustify
+        AutoSize = False
+        Caption = #304'lk Kay'#305't Yapan :'
+        ParentFont = False
+        Font.OverrideDefaults = [ovFontHeight]
+        TabOrder = 1
+      end
+      object UniLabel5: TUniLabel
+        Left = 12
+        Top = 24
+        Width = 96
+        Height = 13
+        Hint = ''
+        Alignment = taRightJustify
+        AutoSize = False
+        Caption = #304'lk Kay'#305't Zaman'#305' :'
+        ParentFont = False
+        Font.OverrideDefaults = [ovFontHeight]
+        TabOrder = 2
+      end
+      object UniLabel6: TUniLabel
+        Left = 337
+        Top = 5
+        Width = 96
+        Height = 13
+        Hint = ''
+        Alignment = taRightJustify
+        AutoSize = False
+        Caption = 'Son De'#287'. Yapan :'
+        ParentFont = False
+        Font.OverrideDefaults = [ovFontHeight]
+        TabOrder = 3
+      end
+      object UniLabel7: TUniLabel
+        Left = 337
+        Top = 23
+        Width = 96
+        Height = 13
+        Hint = ''
+        Alignment = taRightJustify
+        AutoSize = False
+        Caption = 'Son De'#287'. Zaman'#305' :'
+        ParentFont = False
+        Font.OverrideDefaults = [ovFontHeight]
+        TabOrder = 4
+      end
+      object lbIDY: TUniLabel
+        Left = 111
+        Top = 5
+        Width = 220
+        Height = 13
+        Hint = ''
+        AutoSize = False
+        Caption = 'lbIDY'
+        ParentFont = False
+        Font.Style = [fsBold]
+        Font.OverrideDefaults = [ovFontHeight]
+        TabOrder = 5
+      end
+      object lbIDT: TUniLabel
+        Left = 111
+        Top = 24
+        Width = 220
+        Height = 13
+        Hint = ''
+        AutoSize = False
+        Caption = 'lbIDT'
+        ParentFont = False
+        Font.Style = [fsBold]
+        Font.OverrideDefaults = [ovFontHeight]
+        TabOrder = 6
+      end
+      object lbSDY: TUniLabel
+        Left = 436
+        Top = 5
+        Width = 220
+        Height = 13
+        Hint = ''
+        AutoSize = False
+        Caption = 'lbSDY'
+        ParentFont = False
+        Font.Style = [fsBold]
+        Font.OverrideDefaults = [ovFontHeight]
+        TabOrder = 7
+      end
+      object lbSDT: TUniLabel
+        Left = 436
+        Top = 23
+        Width = 220
+        Height = 13
+        Hint = ''
+        AutoSize = False
+        Caption = 'lbSDT'
+        ParentFont = False
+        Font.Style = [fsBold]
+        Font.OverrideDefaults = [ovFontHeight]
+        TabOrder = 8
+      end
+    end
+    object UniBitBtn1: TUniBitBtn
+      Left = 396
+      Top = 54
+      Width = 96
+      Height = 36
+      Hint = ''
+      Caption = 'Yard'#305'm'
+      Anchors = [akRight, akBottom]
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 4
+      Images = MainMod.PrjImgList
+      ImageIndex = 16
+      OnClick = UniBitBtn1Click
+    end
+  end
+  object dsSoru: TUniDataSource
+    DataSet = qSoru
+    Left = 279
+    Top = 77
+  end
+  object qTmp: TUniQuery
+    Connection = MainMod.DBMain
+    SQL.Strings = (
+      'SELECT * FROM usr_user'
+      'WHERE active = '#39'E'#39)
+    Left = 363
+    Top = 76
+  end
+  object qSoru: TUniQuery
+    Connection = MainMod.DBMain
+    SQL.Strings = (
+      'SELECT * FROM edns_soru')
+    Left = 229
+    Top = 78
+  end
+  object tblSecenek: TVirtualTable
+    FieldDefs = <
+      item
+        Name = 'no'
+        DataType = ftInteger
+      end
+      item
+        Name = 'secenek'
+        DataType = ftString
+        Size = 1000
+      end
+      item
+        Name = 'sonuc'
+        DataType = ftString
+        Size = 1000
+      end
+      item
+        Name = 'riskseviye'
+        DataType = ftString
+        Size = 20
+      end
+      item
+        Name = 'risk'
+        DataType = ftString
+        Size = 1000
+      end>
+    Left = 512
+    Top = 368
+    Data = {
+      0400050002006E6F03000000000000000700736563656E656B0100E803000000
+      000500736F6E75630100E803000000000A007269736B73657669796501001400
+      0000000004007269736B0100E80300000000000000000000}
+  end
+  object dsSecenek: TUniDataSource
+    DataSet = tblSecenek
+    Left = 559
+    Top = 365
+  end
+  object qFonks: TUniQuery
+    Connection = MainMod.DBMain
+    SQL.Strings = (
+      'SELECT * FROM sys_funcdef WHERE (mc_id=:mc_id or mc_id=0)')
+    Left = 261
+    Top = 262
+    ParamData = <
+      item
+        DataType = ftUnknown
+        Name = 'mc_id'
+        Value = nil
+      end>
+  end
+  object dsFonks: TUniDataSource
+    DataSet = qFonks
+    Left = 311
+    Top = 261
+  end
+end

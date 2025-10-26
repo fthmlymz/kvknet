@@ -1,0 +1,459 @@
+object frmEDanismanSoruListe: TfrmEDanismanSoruListe
+  Left = 0
+  Top = 0
+  Width = 1128
+  Height = 401
+  OnCreate = UniFrameCreate
+  TabOrder = 0
+  object lbKayitSayisi: TUniLabel
+    Left = 484
+    Top = 313
+    Width = 62
+    Height = 13
+    Hint = ''
+    Caption = 'lbKayitSayisi'
+    TabOrder = 3
+  end
+  object pnlTop: TUniPanel
+    Left = 0
+    Top = 0
+    Width = 1128
+    Height = 110
+    Hint = ''
+    Align = alTop
+    TabOrder = 0
+    Caption = ''
+    ExplicitWidth = 1150
+    DesignSize = (
+      1128
+      110)
+    object edSrcText: TUniEdit
+      Left = 96
+      Top = 47
+      Width = 308
+      Hint = 
+        'Anahtar kelimenin i'#231'inde ge'#231'ti'#287'i ifadeleri bulmak i'#231'in * veya % ' +
+        'i'#351'aretleri kullanmal'#305's'#305'n'#305'z.'
+      CharCaseConversion = uccTurkish
+      CharCase = ecUpperCase
+      Text = ''
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 1
+      ClientEvents.ExtEvents.Strings = (
+        
+          'keyup=function keyup(sender, e, eOpts)'#13#10'{'#13#10'  var val = sender.ge' +
+          'tValue() ; '#13#10'  var pos = sender.inputEl.dom.selectionStart;'#13#10'  s' +
+          'ender.setValue(val.toLocaleUpperCase('#39'TR'#39')); '#13#10'  sender.inputEl.do' +
+          'm.setSelectionRange(pos, pos);'#13#10'}'
+        
+          'keypress=function keypress(sender, e, eOpts)'#13#10'{'#13#10'   if (e.getKey' +
+          '() == 13)'#13#10'   {'#13#10'      ajaxRequest(sender, '#39'doSearch'#39', ["aText="' +
+          '+sender.getValue()]);'#13#10'   };'#13#10'}')
+      OnAjaxEvent = edSrcTextAjaxEvent
+    end
+    object UniLabel1: TUniLabel
+      Left = 12
+      Top = 16
+      Width = 78
+      Height = 13
+      Hint = ''
+      Caption = 'Arama Kriterleri'
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 2
+    end
+    object btnSearch: TUniBitBtn
+      Left = 411
+      Top = 33
+      Width = 96
+      Height = 36
+      Action = actSearch
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 3
+      Images = MainMod.PrjImgList
+      ImageIndex = 10
+    end
+    object btnClose: TUniBitBtn
+      Left = 1022
+      Top = 33
+      Width = 96
+      Height = 36
+      Action = actClose
+      Anchors = [akTop, akRight]
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 4
+      Images = MainMod.PrjImgList
+      ImageIndex = 5
+      ExplicitLeft = 1044
+    end
+    object btnAdd: TUniBitBtn
+      Left = 513
+      Top = 33
+      Width = 96
+      Height = 36
+      Action = actAdd
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 5
+      Images = MainMod.PrjImgList
+      ImageIndex = 18
+    end
+    object btnEdit: TUniBitBtn
+      Left = 615
+      Top = 33
+      Width = 96
+      Height = 36
+      Action = actEdit
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 6
+      Images = MainMod.PrjImgList
+      ImageIndex = 2
+    end
+    object UniLabel2: TUniLabel
+      Left = 14
+      Top = 50
+      Width = 76
+      Height = 13
+      Hint = ''
+      Caption = 'Aranacak '#304'fade'
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 7
+    end
+    object edSrcDurumu: TUniComboBox
+      Left = 232
+      Top = 16
+      Width = 172
+      Height = 28
+      Hint = ''
+      Style = csDropDownList
+      Text = 'AKT'#304'F'
+      Items.Strings = (
+        'T'#220'M'#220
+        'AKT'#304'F'
+        'PAS'#304'F'
+        'CEVAPLANMAMI'#350' AKT'#304'F')
+      ItemIndex = 1
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 9
+      CharCase = ecUpperCase
+      IconItems = <>
+      OnChange = edSrcTipiChange
+    end
+    object edSrcTipi: TUniComboBox
+      Left = 96
+      Top = 16
+      Width = 130
+      Height = 28
+      Hint = ''
+      Style = csDropDownList
+      Text = 'REF. NO'
+      Items.Strings = (
+        'REF. NO'
+        'SORU METN'#304
+        'SORU NO')
+      ItemIndex = 0
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 8
+      CharCase = ecUpperCase
+      IconItems = <>
+      OnChange = edSrcTipiChange
+    end
+    object UniBitBtn1: TUniBitBtn
+      Left = 920
+      Top = 33
+      Width = 96
+      Height = 36
+      Hint = ''
+      Caption = 'Yard'#305'm'
+      Anchors = [akTop, akRight]
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 10
+      Images = MainMod.PrjImgList
+      ImageIndex = 16
+      OnClick = UniBitBtn1Click
+      ExplicitLeft = 942
+    end
+    object UniLabel3: TUniLabel
+      Left = 37
+      Top = 76
+      Width = 53
+      Height = 13
+      Hint = ''
+      Caption = 'Fonksiyon'
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 11
+    end
+    object edSrcFonk: TUniComboBox
+      Left = 96
+      Top = 73
+      Width = 308
+      Hint = ''
+      Style = csDropDownList
+      Text = ''
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 12
+      IconItems = <>
+      OnChange = edSrcFonkChange
+    end
+    object btnDelete: TUniBitBtn
+      Left = 717
+      Top = 33
+      Width = 96
+      Height = 36
+      Action = actDelete
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 13
+      Images = MainMod.PrjImgList
+      ImageIndex = 12
+    end
+    object btnTopluEkle: TUniBitBtn
+      Left = 819
+      Top = 33
+      Width = 96
+      Height = 36
+      Hint = ''
+      Caption = 'Toplu Ekle'
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 14
+      Images = MainMod.PrjImgList
+      ImageIndex = 15
+      OnClick = btnTopluEkleClick
+    end
+  end
+  object UniDBGrid1: TUniDBGrid
+    Left = 0
+    Top = 110
+    Width = 1128
+    Height = 291
+    Hint = ''
+    PagingBarAuxControl = lbKayitSayisi
+    TitleFont.OverrideDefaults = [ovFontHeight]
+    DataSource = dsSoru
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgAutoRefreshRow]
+    WebOptions.PageSize = 125
+    LoadMask.Message = 'Veri y'#252'kleniyor...'
+    HiddenPanel = hpnFiltre
+    EmptyText = 'Veri yok'
+    Align = alClient
+    Font.OverrideDefaults = [ovFontHeight]
+    ParentFont = False
+    TabOrder = 1
+    OnColumnSort = UniDBGrid1ColumnSort
+    OnColumnFilter = UniDBGrid1ColumnFilter
+    Columns = <
+      item
+        FieldName = 'id'
+        Filtering.Enabled = True
+        Filtering.Editor = edfId
+        Title.Alignment = taCenter
+        Title.Caption = 'Ref. No'
+        Title.Font.OverrideDefaults = [ovFontHeight]
+        Width = 96
+        Font.OverrideDefaults = [ovFontHeight]
+        Alignment = taCenter
+        Sortable = True
+      end
+      item
+        FieldName = 'active'
+        Filtering.Enabled = True
+        Filtering.Editor = cbfAktif
+        Title.Alignment = taCenter
+        Title.Caption = 'Aktif'
+        Title.Font.OverrideDefaults = [ovFontHeight]
+        Width = 72
+        Font.OverrideDefaults = [ovFontHeight]
+        Alignment = taCenter
+        Sortable = True
+        CheckBoxField.FieldValues = 'E;H'
+        CheckBoxField.DisplayValues = 'Evet;Hay'#305'r'
+      end
+      item
+        FieldName = 'soru_no'
+        Filtering.Enabled = True
+        Filtering.Editor = edfSoruNo
+        Title.Alignment = taCenter
+        Title.Caption = 'Soru No'
+        Title.Font.OverrideDefaults = [ovFontHeight]
+        Width = 96
+        Font.OverrideDefaults = [ovFontHeight]
+        Sortable = True
+        DisplayMemo = True
+      end
+      item
+        FieldName = 'soru_metni'
+        Filtering.Enabled = True
+        Filtering.Editor = edfSoruMetin
+        Title.Alignment = taCenter
+        Title.Caption = 'Soru Metni'
+        Title.Font.OverrideDefaults = [ovFontHeight]
+        Width = 512
+        Font.OverrideDefaults = [ovFontHeight]
+        Sortable = True
+        DisplayMemo = True
+      end
+      item
+        FieldName = 'function'
+        Filtering.Enabled = True
+        Filtering.Editor = edfFunction
+        Title.Alignment = taCenter
+        Title.Caption = 'Fonksiyon'
+        Title.Font.OverrideDefaults = [ovFontHeight]
+        Width = 192
+        Font.OverrideDefaults = [ovFontHeight]
+        Sortable = True
+      end>
+  end
+  object hpnFiltre: TUniHiddenPanel
+    Left = 60
+    Top = 171
+    Width = 160
+    Height = 187
+    Hint = ''
+    Visible = True
+    object edfId: TUniNumberEdit
+      Left = 15
+      Top = 30
+      Width = 121
+      Hint = ''
+      CharEOL = #13
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 1
+      DecimalSeparator = ','
+    end
+    object cbfAktif: TUniComboBox
+      Left = 15
+      Top = 58
+      Width = 121
+      Hint = ''
+      Style = csDropDownList
+      Text = ''
+      Items.Strings = (
+        'E'
+        'H')
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 2
+      ClientEvents.ExtEvents.Strings = (
+        
+          'keyup=function keyup(sender, e, eOpts)'#13#10'{'#13#10'    var val = sender.' +
+          'getValue() ; '#13#10'  var pos = sender.inputEl.dom.selectionStart;'#13#10' ' +
+          ' sender.setValue(val.toLocaleUpperCase()); '#13#10'  sender.inputEl.do' +
+          'm.setSelectionRange(pos, pos);'#13#10'}')
+      IconItems = <>
+    end
+    object edfSoruNo: TUniEdit
+      Left = 15
+      Top = 86
+      Width = 121
+      Hint = ''
+      CharCase = ecUpperCase
+      Text = ''
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 3
+      ClientEvents.ExtEvents.Strings = (
+        
+          'keyup=function keyup(sender, e, eOpts)'#13#10'{'#13#10'    var val = sender.' +
+          'getValue() ; '#13#10'  var pos = sender.inputEl.dom.selectionStart;'#13#10' ' +
+          ' sender.setValue(val.toLocaleUpperCase()); '#13#10'  sender.inputEl.do' +
+          'm.setSelectionRange(pos, pos);'#13#10'}')
+    end
+    object edfSoruMetin: TUniEdit
+      Left = 15
+      Top = 114
+      Width = 121
+      Hint = ''
+      CharCase = ecUpperCase
+      Text = ''
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 4
+      ClientEvents.ExtEvents.Strings = (
+        
+          'keyup=function keyup(sender, e, eOpts)'#13#10'{'#13#10'    var val = sender.' +
+          'getValue() ; '#13#10'  var pos = sender.inputEl.dom.selectionStart;'#13#10' ' +
+          ' sender.setValue(val.toLocaleUpperCase()); '#13#10'  sender.inputEl.do' +
+          'm.setSelectionRange(pos, pos);'#13#10'}')
+    end
+    object edfFunction: TUniEdit
+      Left = 15
+      Top = 142
+      Width = 121
+      Hint = ''
+      CharCase = ecUpperCase
+      CharEOL = #13
+      Text = ''
+      ParentFont = False
+      Font.OverrideDefaults = [ovFontHeight]
+      TabOrder = 5
+      ClientEvents.ExtEvents.Strings = (
+        
+          'keyup=function keyup(sender, e, eOpts)'#13#10'{'#13#10'    var val = sender.' +
+          'getValue() ; '#13#10'  var pos = sender.inputEl.dom.selectionStart;'#13#10' ' +
+          ' sender.setValue(val.toLocaleUpperCase()); '#13#10'  sender.inputEl.do' +
+          'm.setSelectionRange(pos, pos);'#13#10'}')
+    end
+  end
+  object ActList: TActionList
+    Left = 348
+    Top = 165
+    object actAdd: TAction
+      Caption = 'Yeni Kay'#305't'
+      OnExecute = actAddExecute
+    end
+    object actEdit: TAction
+      Caption = 'De'#287'i'#351'tir'
+      OnExecute = actEditExecute
+    end
+    object actDownload: TAction
+      Caption = #350'ablon '#304'ndir'
+    end
+    object actSearch: TAction
+      Caption = 'Liste'
+      OnExecute = actSearchExecute
+    end
+    object actClose: TAction
+      Caption = 'Kapat'
+      OnExecute = actCloseExecute
+    end
+    object acExcel: TAction
+      Caption = 'Listeyi Excel'#39'e Kaydet'
+    end
+    object actDelete: TAction
+      Caption = 'Sil'
+      OnExecute = actDeleteExecute
+    end
+  end
+  object dsSoru: TUniDataSource
+    DataSet = qSoru
+    Left = 279
+    Top = 165
+  end
+  object qTmp: TUniQuery
+    Connection = MainMod.DBMain
+    SQL.Strings = (
+      'SELECT * FROM usr_user')
+    Left = 405
+    Top = 222
+  end
+  object qSoru: TUniQuery
+    Connection = MainMod.DBMain
+    SQL.Strings = (
+      'SELECT * FROM usr_user')
+    Left = 229
+    Top = 166
+  end
+end

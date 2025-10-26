@@ -1,0 +1,175 @@
+unit unFonksiyonListe;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics,
+  Controls, Forms, uniGUITypes, uniGUIAbstractClasses,
+  uniGUIClasses, uniGUIFrame, uniBasicGrid, uniDBGrid, Data.DB, DBAccess, Uni, MemDS, uniGUIBaseClasses,
+  uniPanel, uniLabel, uniEdit, uniMultiItem, uniComboBox, uniButton, uniBitBtn, System.Actions, Vcl.ActnList;
+
+type
+  TfrmFonksiyonListe = class(TUniFrame)
+    pnlTop: TUniPanel;
+    dsFonks: TUniDataSource;
+    UniDBGrid1: TUniDBGrid;
+    edSrcType: TUniComboBox;
+    edSrcText: TUniEdit;
+    edSrcActive: TUniComboBox;
+    UniLabel1: TUniLabel;
+    btnSearch: TUniBitBtn;
+    btnClose: TUniBitBtn;
+    btnAdd: TUniBitBtn;
+    btnEdit: TUniBitBtn;
+    ActList: TActionList;
+    actAdd: TAction;
+    actEdit: TAction;
+    actSearch: TAction;
+    actClose: TAction;
+    UniLabel2: TUniLabel;
+    qFonks: TUniQuery;
+    actDelete: TAction;
+    btnDelete: TUniBitBtn;
+    lbKayitSayisi: TUniLabel;
+    procedure UniFrameCreate(Sender: TObject);
+    procedure edSrcTypeChange(Sender: TObject);
+    procedure edSrcActiveChange(Sender: TObject);
+    procedure actAddExecute(Sender: TObject);
+    procedure actEditExecute(Sender: TObject);
+    procedure actSearchExecute(Sender: TObject);
+    procedure actCloseExecute(Sender: TObject);
+    procedure edSrcTextAjaxEvent(Sender: TComponent; EventName: string; Params: TUniStrings);
+    procedure UniDBGrid1ColumnSort(Column: TUniDBGridColumn; Direction: Boolean);
+    procedure actDeleteExecute(Sender: TObject);
+    procedure SilControl(Sender: TComponent; Res: Integer);
+  private
+    procedure NewSQL;
+    procedure ManageSettings;
+  public
+  end;
+
+implementation
+
+{$R *.dfm}
+
+uses MainModule, McMLib, Main, unDepartmanTanim, unFonksiyonTanim;
+
+procedure TfrmFonksiyonListe.actAddExecute(Sender: TObject);
+begin
+  if frmFonksiyonTanim.Insert = mrOk then RefreshQuery(qFonks);
+  ManageSettings;
+end;
+
+procedure TfrmFonksiyonListe.actCloseExecute(Sender: TObject);
+begin
+  MainForm.PgControl.ActivePage.Close;
+end;
+
+procedure TfrmFonksiyonListe.actDeleteExecute(Sender: TObject);
+begin
+  MessageDlg('Bu Fonksiyonu silmek istediðinizden emin misiniz?', mtConfirmation, mbYesNo, SilControl);
+end;
+
+procedure TfrmFonksiyonListe.actEditExecute(Sender: TObject);
+begin
+// frFonksiyonTanim'da kontrol var
+//  if qFonks.FieldByName('id').AsInteger < 10000 then
+//  begin
+//    MessageDlg('Deðiþtirmek istediðiniz fonksiyon bir sistem fonksiyonu. Bu fonksiyonun adý ve aktifliði deðiþtirilemez, sadece departman deðiþikliði yapýlabilir.', mtError, [mbOk]);
+//  end;
+
+  if frmFonksiyonTanim.Edit(qFonks.FieldByName('id').AsInteger) = mrOk then RefreshQuery(qFonks);
+  ManageSettings;
+end;
+
+procedure TfrmFonksiyonListe.actSearchExecute(Sender: TObject);
+begin
+  NewSQL;
+end;
+
+procedure TfrmFonksiyonListe.edSrcActiveChange(Sender: TObject);
+begin
+  NewSQL;
+end;
+
+procedure TfrmFonksiyonListe.edSrcTextAjaxEvent(Sender: TComponent; EventName: string; Params: TUniStrings);
+begin
+  if EventName = 'doSearch' then NewSQL;
+end;
+
+procedure TfrmFonksiyonListe.edSrcTypeChange(Sender: TObject);
+begin
+  NewSQL;
+end;
+
+procedure TfrmFonksiyonListe.ManageSettings;
+begin
+  actAdd.Enabled    := MainMod.LoginInfo.Yetkiler[175] and (qFonks.State = dsBrowse);
+  actEdit.Enabled   := MainMod.LoginInfo.Yetkiler[176] and (qFonks.State = dsBrowse) and (qFonks.FieldByName('id').AsInteger > 0);
+  actdELETE.Enabled := MainMod.LoginInfo.Yetkiler[177] and (qFonks.State = dsBrowse) and (qFonks.FieldByName('id').AsInteger > 0);
+
+  actClose.Enabled  := not DataEditing(qFonks);
+end;
+
+procedure TfrmFonksiyonListe.NewSQL;
+var
+	SQLStr,
+  SrcText,
+	WhereStr : string;
+begin
+	SQLStr   := 'SELECT d.* '+
+							'FROM sys_funcdef d ';
+
+	WhereStr 	:= '(d.mc_id = ' + IntToStr(MainMod.MCID) + ' OR d.mc_id=0) AND ';
+	case edSrcActive.ItemIndex of
+		0 : WhereStr := WhereStr + 'd.active = ''E'' AND ';
+		1 : WhereStr := WhereStr + 'd.active = ''H'' AND ';
+	end;
+  if edSrcText.Text <> '' then
+  begin
+    SrcText := StringReplace(edSrcText.Text, '*', '%', [rfReplaceAll]);
+    case edSrcType.ItemIndex of
+      0 : WhereStr := WhereStr + 'd.id::varchar LIKE ''%'  + SrcText  + '%'' AND ';
+      1 : WhereStr := WhereStr + 'd.function LIKE ''%' + SrcText  + '%'' AND ';
+      //departman
+      //2 : WhereStr := WhereStr + 'd.id in (select b1.func_id from sys_deptdef a1, sys_deptfunc b1 where a1.id=b1.dept_id and a1.title LIKE ''' + SrcText  + ''') AND ';
+		end;
+	end;
+
+	if Trim(WhereStr) <> '' then System.Delete(WhereStr, Length(WhereStr) - 3, 4);
+	if Trim(WhereStr) <> '' then SQLStr := SQLStr + 'WHERE ' + WhereStr;
+	SQLStr := SQLStr + ' ORDER BY d.id';
+
+	QueryOpen(qFonks, SQLStr);
+  ManageSettings;
+  lbKayitSayisi.Text := IntToStr(qFonks.RecordCount) + ' Kayýt Listelendi...';
+end;
+
+procedure TfrmFonksiyonListe.SilControl(Sender: TComponent; Res: Integer);
+begin
+  if Res <> mrYes then Exit;
+  qFonks.Delete;
+  ManageSettings;
+end;
+
+procedure TfrmFonksiyonListe.UniDBGrid1ColumnSort(Column: TUniDBGridColumn; Direction: Boolean);
+var
+  Dir : String;
+begin
+  if not Column.Sortable then Exit;
+
+  if Direction then Dir := 'ASC' else Dir := 'DESC';
+  qFonks.IndexFieldNames := '"' + Column.FieldName + '" ' + Dir;
+end;
+
+procedure TfrmFonksiyonListe.UniFrameCreate(Sender: TObject);
+begin
+  NewSQL;
+  ManageSettings;
+  edSrcText.SetFocus;
+end;
+
+initialization
+  RegisterClass(TfrmFonksiyonListe);
+
+end.

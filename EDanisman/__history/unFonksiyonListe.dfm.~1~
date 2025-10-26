@@ -1,0 +1,247 @@
+object frmFonksiyonListe: TfrmFonksiyonListe
+  Left = 0
+  Top = 0
+  Width = 960
+  Height = 400
+  OnCreate = UniFrameCreate
+  TabOrder = 0
+  object lbKayitSayisi: TUniLabel
+    Left = 300
+    Top = 304
+    Width = 62
+    Height = 13
+    Hint = ''
+    Caption = 'lbKayitSayisi'
+    TabOrder = 2
+  end
+  object pnlTop: TUniPanel
+    Left = 0
+    Top = 0
+    Width = 960
+    Height = 72
+    Hint = ''
+    Align = alTop
+    ParentFont = False
+    Font.OverrideDefaults = [ovFontHeight]
+    TabOrder = 0
+    Caption = ''
+    DesignSize = (
+      960
+      72)
+    object edSrcType: TUniComboBox
+      Left = 96
+      Top = 10
+      Width = 132
+      Height = 28
+      Hint = ''
+      Style = csDropDownList
+      Text = 'FONKS'#304'YON'
+      Items.Strings = (
+        'REF. NO'
+        'FONKS'#304'YON')
+      ItemIndex = 1
+      TabOrder = 1
+      CharCase = ecUpperCase
+      IconItems = <>
+      OnChange = edSrcTypeChange
+    end
+    object edSrcText: TUniEdit
+      Left = 94
+      Top = 39
+      Width = 236
+      Height = 23
+      Hint = ''
+      CharCase = ecUpperCase
+      Text = ''
+      TabOrder = 2
+      ClientEvents.ExtEvents.Strings = (
+        
+          'keyup=function keyup(sender, e, eOpts)'#13#10'{'#13#10'  var val = sender.ge' +
+          'tValue() ; '#13#10'  var pos = sender.inputEl.dom.selectionStart;'#13#10'  s' +
+          'ender.setValue(val.toLocaleUpperCase()); '#13#10'  sender.inputEl.dom.' +
+          'setSelectionRange(pos, pos);'#13#10'}'
+        
+          'keypress=function keypress(sender, e, eOpts)'#13#10'{'#13#10'   if (e.getKey' +
+          '() == 13)'#13#10'   {'#13#10'      ajaxRequest(sender, '#39'doSearch'#39', ["aText="' +
+          '+sender.getValue()]);'#13#10'   };'#13#10'}')
+      OnAjaxEvent = edSrcTextAjaxEvent
+    end
+    object edSrcActive: TUniComboBox
+      Left = 234
+      Top = 10
+      Width = 96
+      Height = 28
+      Hint = ''
+      Style = csDropDownList
+      Text = 'AKT'#304'F'
+      Items.Strings = (
+        'AKT'#304'F'
+        'PAS'#304'F'
+        'T'#220'M'#220)
+      ItemIndex = 0
+      TabOrder = 3
+      IconItems = <>
+      OnChange = edSrcActiveChange
+    end
+    object UniLabel1: TUniLabel
+      Left = 12
+      Top = 13
+      Width = 78
+      Height = 13
+      Hint = ''
+      Caption = 'Arama Kriterleri'
+      TabOrder = 4
+    end
+    object btnSearch: TUniBitBtn
+      Left = 347
+      Top = 18
+      Width = 96
+      Height = 36
+      Action = actSearch
+      TabOrder = 5
+      Images = MainMod.PrjImgList
+      ImageIndex = 10
+    end
+    object btnClose: TUniBitBtn
+      Left = 856
+      Top = 18
+      Width = 96
+      Height = 36
+      Action = actClose
+      Anchors = [akTop, akRight]
+      TabOrder = 6
+      Images = MainMod.PrjImgList
+      ImageIndex = 5
+    end
+    object btnAdd: TUniBitBtn
+      Left = 449
+      Top = 18
+      Width = 96
+      Height = 36
+      Action = actAdd
+      TabOrder = 7
+      Images = MainMod.PrjImgList
+      ImageIndex = 18
+    end
+    object btnEdit: TUniBitBtn
+      Left = 551
+      Top = 18
+      Width = 96
+      Height = 36
+      Action = actEdit
+      TabOrder = 8
+      Images = MainMod.PrjImgList
+      ImageIndex = 2
+    end
+    object UniLabel2: TUniLabel
+      Left = 12
+      Top = 43
+      Width = 76
+      Height = 13
+      Hint = ''
+      Caption = 'Aranacak '#304'fade'
+      TabOrder = 9
+    end
+    object btnDelete: TUniBitBtn
+      Left = 653
+      Top = 18
+      Width = 96
+      Height = 36
+      Action = actDelete
+      TabOrder = 10
+      Images = MainMod.PrjImgList
+      ImageIndex = 12
+    end
+  end
+  object UniDBGrid1: TUniDBGrid
+    Left = 0
+    Top = 72
+    Width = 960
+    Height = 328
+    Hint = ''
+    PagingBarAuxControl = lbKayitSayisi
+    TitleFont.OverrideDefaults = [ovFontHeight]
+    DataSource = dsFonks
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgAutoRefreshRow]
+    WebOptions.PageSize = 125
+    LoadMask.Message = 'Veri y'#252'kleniyor...'
+    EmptyText = 'Veri yok'
+    Align = alClient
+    Font.OverrideDefaults = [ovFontHeight]
+    ParentFont = False
+    TabOrder = 1
+    OnColumnSort = UniDBGrid1ColumnSort
+    Columns = <
+      item
+        FieldName = 'id'
+        Title.Alignment = taCenter
+        Title.Caption = 'Ref. No'
+        Title.Font.OverrideDefaults = [ovFontHeight]
+        Width = 65
+        Font.OverrideDefaults = [ovFontHeight]
+        ReadOnly = True
+        Sortable = True
+      end
+      item
+        FieldName = 'function'
+        Title.Alignment = taCenter
+        Title.Caption = 'Fonksiyon'
+        Title.Font.OverrideDefaults = [ovFontHeight]
+        Width = 250
+        Font.OverrideDefaults = [ovFontHeight]
+        ReadOnly = True
+        Sortable = True
+      end
+      item
+        FieldName = 'active'
+        Title.Alignment = taCenter
+        Title.Caption = 'Aktif'
+        Title.Font.OverrideDefaults = [ovFontHeight]
+        Width = 80
+        Font.OverrideDefaults = [ovFontHeight]
+        Alignment = taLeftJustify
+        ReadOnly = True
+        Sortable = True
+        CheckBoxField.BooleanFieldOnly = False
+        CheckBoxField.FieldValues = 'E;H'
+        CheckBoxField.DisplayValues = 'EVET;HAYIR'
+      end>
+  end
+  object dsFonks: TUniDataSource
+    DataSet = qFonks
+    Left = 279
+    Top = 165
+  end
+  object ActList: TActionList
+    Left = 321
+    Top = 165
+    object actAdd: TAction
+      Caption = 'Yeni Kay'#305't'
+      OnExecute = actAddExecute
+    end
+    object actEdit: TAction
+      Caption = 'De'#287'i'#351'tir'
+      OnExecute = actEditExecute
+    end
+    object actSearch: TAction
+      Caption = 'Liste'
+      OnExecute = actSearchExecute
+    end
+    object actClose: TAction
+      Caption = 'Kapat'
+      OnExecute = actCloseExecute
+    end
+    object actDelete: TAction
+      Caption = 'Sil'
+      OnExecute = actDeleteExecute
+    end
+  end
+  object qFonks: TUniQuery
+    Connection = MainMod.DBMain
+    SQL.Strings = (
+      'SELECT * FROM sys_funcdef'
+      'WHERE active = '#39'E'#39)
+    Left = 229
+    Top = 167
+  end
+end

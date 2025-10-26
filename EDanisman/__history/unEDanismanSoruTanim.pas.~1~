@@ -1,0 +1,408 @@
+unit unEDanismanSoruTanim;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics,
+  Controls, Forms, Clipbrd, uniGUITypes, uniGUIAbstractClasses,
+  uniGUIClasses, uniGUIForm, uniPanel, uniButton, uniBitBtn, uniMemo, uniDBMemo, uniMultiItem, uniComboBox,
+  uniDBComboBox, uniEdit, uniDBEdit, uniLabel, uniGUIBaseClasses, Data.DB, DBAccess, Uni, uniDBLookupComboBox,
+  MemDS, uniCheckBox, uniDBCheckBox, uniScrollBox, VirtualTable, uniBasicGrid,
+  uniDBGrid, uniRadioGroup, uniDBRadioGroup;
+
+type
+  TfrmEDanismanSoruTanim = class(TUniForm)
+    dsSoru: TUniDataSource;
+    pnlData: TUniPanel;
+    UniLabel8: TUniLabel;
+    edDesc: TUniDBMemo;
+    pnlButtons: TUniPanel;
+    btnCancel: TUniBitBtn;
+    btnPost: TUniBitBtn;
+    pnlLog: TUniContainerPanel;
+    UniLabel4: TUniLabel;
+    UniLabel5: TUniLabel;
+    UniLabel6: TUniLabel;
+    UniLabel7: TUniLabel;
+    lbIDY: TUniLabel;
+    lbIDT: TUniLabel;
+    lbSDY: TUniLabel;
+    lbSDT: TUniLabel;
+    qTmp: TUniQuery;
+    UniBitBtn1: TUniBitBtn;
+    qSoru: TUniQuery;
+    edsoru: TUniDBMemo;
+    edAcikRiza: TUniDBCheckBox;
+    UniLabel1: TUniLabel;
+    UniDBGrid1: TUniDBGrid;
+    btnSecenekEkle: TUniBitBtn;
+    btnSecenekSil: TUniBitBtn;
+    btnSecenekDegistir: TUniBitBtn;
+    tblSecenek: TVirtualTable;
+    dsSecenek: TUniDataSource;
+    UniLabel2: TUniLabel;
+    UniLabel3: TUniLabel;
+    edSoruNo: TUniDBEdit;
+    edSeceneksekli: TUniDBRadioGroup;
+    UniLabel9: TUniLabel;
+    edFonksiyon: TUniDBLookupComboBox;
+    qFonks: TUniQuery;
+    dsFonks: TUniDataSource;
+    UniLabel10: TUniLabel;
+    UniDBMemo1: TUniDBMemo;
+    procedure UniFormBeforeShow(Sender: TObject);
+    procedure btnPostClick(Sender: TObject);
+    procedure btnCancelClick(Sender: TObject);
+    procedure UniBitBtn1Click(Sender: TObject);
+    procedure btnSecenekEkleClick(Sender: TObject);
+    procedure btnSecenekDegistirClick(Sender: TObject);
+    procedure btnSecenekSilClick(Sender: TObject);
+    procedure SecenekSilControl(Sender: TComponent; Res: Integer);
+    procedure UniDBGrid1ColumnSort(Column: TUniDBGridColumn;
+      Direction: Boolean);
+  private
+    YardimKw : string;
+    sqName: String;
+    tableName: String;
+    procedure SecenekleriGoster;
+    procedure SecenekleriDuzenle;
+    function ListToStr(ATable: TVirtualTable): String;
+    procedure StrToList(ATable: TVirtualTable; aStr:String);
+  public
+    function Exec(aSoruID, aSoruSetiId, aSoruSablonId: Integer): Integer;
+  end;
+
+function frmEDanismanSoruTanim: TfrmEDanismanSoruTanim;
+
+implementation
+
+uses uniGUIApplication, MainModule, McMLib, unHelpPage, unEDanismanSecenekTanim,
+  unDepartmanSec, unEDanismanSoruSetiTanim, unFonksiyonSec;
+
+{$R *.dfm}
+
+function frmEDanismanSoruTanim: TfrmEDanismanSoruTanim;
+begin
+  Result := TfrmEDanismanSoruTanim(MainMod.GetFormInstance(TfrmEDanismanSoruTanim));
+end;
+
+procedure TfrmEDanismanSoruTanim.UniDBGrid1ColumnSort(Column: TUniDBGridColumn;
+  Direction: Boolean);
+var
+  Dir : String;
+begin
+  if not Column.Sortable then Exit;
+
+  if Direction then Dir := 'ASC' else Dir := 'DESC';
+  tblSecenek.IndexFieldNames := '"' + Column.FieldName + '" ' + Dir;
+end;
+
+procedure TfrmEDanismanSoruTanim.btnCancelClick(Sender: TObject);
+begin
+  qSoru.Cancel;
+  ModalResult := mrCancel;
+end;
+
+procedure TfrmEDanismanSoruTanim.btnPostClick(Sender: TObject);
+var
+  deptIds: String;
+  deptSay: Integer;
+  i: integer;
+begin
+  if not tblSecenek.Active then tblSecenek.Open;
+  if tblSecenek.RecordCount < 2 then
+  begin
+    MessageDlg('Seçenekler belirtilmemiþ, en az iki seçenek eklenmelidir. Lütfen kontrol ediniz.', mtError, [mbOk]);
+    edSoruNo.SetFocus;
+    Exit;
+  end;
+
+  secenekleriDuzenle;
+
+  if qSoru.FieldByName('soru_no').AsString = '' then
+  begin
+    MessageDlg('Soru Numarasý belirtilmemiþ. Lütfen kontrol ediniz.', mtError, [mbOk]);
+    edSoruNo.SetFocus;
+    Exit;
+  end;
+  if qSoru.FieldByName('soru_metni').AsString = '' then
+  begin
+    MessageDlg('Soru Metni belirtilmemiþ. Lütfen kontrol ediniz.', mtError, [mbOk]);
+    edSoru.SetFocus;
+    Exit;
+  end;
+  if qSoru.FieldByName('secenek_sekli').AsString = '' then
+  begin
+    MessageDlg('Seçenek Þekli belirtilmemiþ. Lütfen kontrol ediniz.', mtError, [mbOk]);
+    edSeceneksekli.SetFocus;
+    Exit;
+  end;
+
+  if qSoru.FieldByName('func_id').AsString = '' then
+  begin
+    MessageDlg('Ýlgili fonksiyonlar belirtilmemiþ. Lütfen kontrol ediniz.', mtError, [mbOk]);
+    edFonksiyon.setFocus;
+    Exit;
+  end;
+
+  if qSoru.State in [dsInsert] then
+  begin
+    qSoru.FieldByName('id').AsInteger     := MainMod.GetSeq(sqName);
+    qSoru.FieldByName('mc_id').AsInteger  := MainMod.MCID;
+    qSoru.FieldByName('idy').AsInteger    := MainMod.LoginInfo.ID;
+    qSoru.FieldByName('idt').AsDateTime   := Now;
+  end;
+  qSoru.FieldByName('sdy').AsInteger      := MainMod.LoginInfo.ID;
+  qSoru.FieldByName('sdt').AsDateTime     := Now;
+  qSoru.Post;
+  ModalResult := mrOk;
+end;
+
+procedure TfrmEDanismanSoruTanim.btnSecenekDegistirClick(Sender: TObject);
+begin
+  if tblSecenek.RecordCount = 0 then exit;
+
+  if frmEDanismanSecenekTanim.Exec(qSoru, tblSecenek.fieldByName('no').AsInteger, 1) = mrok then
+    SecenekleriGoster;
+end;
+
+procedure TfrmEDanismanSoruTanim.btnSecenekEkleClick(Sender: TObject);
+begin
+  if tblSecenek.RecordCount = 5 then
+  begin
+    MessageDlg('En fazla 5 seçenek ekleyebilirsiniz!', mtWarning, [mbok]);
+    exit;
+  end;
+  if frmEDanismanSecenekTanim.Exec(qSoru, tblSecenek.RecordCount+1, 0) = mrok then
+    SecenekleriGoster;
+end;
+
+procedure TfrmEDanismanSoruTanim.btnSecenekSilClick(Sender: TObject);
+begin
+  if tblSecenek.RecordCount = 0 then
+  begin
+    MessageDlg('Silinecek kayýt bulunamadý', mtWarning, [mbOK]);
+    Exit;
+  end;
+  MessageDlg('Seçeneði silmek istediðinizden emin misiniz?', mtConfirmation, mbYesNo, SecenekSilControl);
+end;
+
+function TfrmEDanismanSoruTanim.Exec(aSoruID, aSoruSetiId, aSoruSablonId: Integer): Integer;
+begin
+  //aSoruId      : 0 dan büyük ise deðiþtir, 0 ise ekle
+  //aSoruSetiId  : 0 dan büyük ise o sete baðlý soru gelir, 0 ise þablon soru gelir
+  //aSoruSablonId: 0 dan büyük ise yeni tanýmlanan soruya o sorunun detayý ve seçenekleri kopyalanýr
+
+  qSoru.Close;
+  if aSoruSetiId = 0 then
+  begin
+    qSoru.SQL.Text := 'SELECT * FROM edns_soru WHERE id=' + IntToStr(aSoruId);
+    tableName := 'edns_soru';
+    sqName := 'sq_edns_soru_id';
+  end
+  else
+  begin
+    qSoru.SQL.Text := 'SELECT * FROM edns_soruseti_soru WHERE id=' + IntToStr(aSoruId) + ' and ss_id='  + IntToStr(aSoruSetiId);
+    tableName := 'edns_soruseti';
+    sqName := 'sq_edns_soruseti_soru_id';
+  end;
+  qSoru.Open;
+
+  if aSoruId > 0 then
+  begin
+    if qSoru.FieldByName('id').AsInteger <> asoruId then
+      exit;
+    SecenekleriGoster;
+    qSoru.Edit;
+    YardimKw := 'EDanismanSoruDegistirme';
+  end
+  else
+  begin
+    qSoru.Insert;
+    qSoru.FieldByName('active').AsString        := 'E';
+    qSoru.FieldByName('mc_id').AsInteger := MainMod.MCID;
+    if aSoruSetiId > 0 then
+    begin
+      qSoru.FieldByName('ss_id').AsInteger := aSoruSetiId;
+//      qSoru.FieldByName('dept_ids').AsString := frmEDanismanSoruSetiTanim.qSoruSeti.FieldByName('dept_ids').AsString;
+
+      if aSoruSablonId > 0 then
+      begin
+        queryOpen(qtmp, 'SELECT * FROM edns_soru WHERE id=' + IntToStr(aSoruSablonId));
+        qSoru.FieldByName('soru_id').AsInteger             := aSoruSablonId;
+        qSoru.FieldByName('soru_no').AsString              := qTmp.FieldByName('soru_no').AsString;
+        qSoru.FieldByName('func_id').AsString              := qTmp.FieldByName('func_id').AsString;
+        qSoru.FieldByName('soru_metni').AsString           := qTmp.FieldByName('soru_metni').AsString;
+        qSoru.FieldByName('soru_aciklama').AsString        := qTmp.FieldByName('soru_aciklama').AsString;
+        qSoru.FieldByName('secenek_sekli').AsString        := qTmp.FieldByName('secenek_sekli').AsString;
+        qSoru.FieldByName('secenek_1').AsString            := qTmp.FieldByName('secenek_1').AsString;
+        qSoru.FieldByName('secenek_1_sonuc').AsString      := qTmp.FieldByName('secenek_1_sonuc').AsString;
+        qSoru.FieldByName('secenek_1_riskseviye').AsString := qTmp.FieldByName('secenek_1_riskseviye').AsString;
+        qSoru.FieldByName('secenek_1_risk').AsString       := qTmp.FieldByName('secenek_1_risk').AsString;
+        qSoru.FieldByName('secenek_2').AsString            := qTmp.FieldByName('secenek_2').AsString;
+        qSoru.FieldByName('secenek_2_sonuc').AsString      := qTmp.FieldByName('secenek_2_sonuc').AsString;
+        qSoru.FieldByName('secenek_2_riskseviye').AsString := qTmp.FieldByName('secenek_2_riskseviye').AsString;
+        qSoru.FieldByName('secenek_2_risk').AsString       := qTmp.FieldByName('secenek_2_risk').AsString;
+        qSoru.FieldByName('secenek_3').AsString            := qTmp.FieldByName('secenek_3').AsString;
+        qSoru.FieldByName('secenek_3_sonuc').AsString      := qTmp.FieldByName('secenek_3_sonuc').AsString;
+        qSoru.FieldByName('secenek_3_riskseviye').AsString := qTmp.FieldByName('secenek_3_riskseviye').AsString;
+        qSoru.FieldByName('secenek_3_risk').AsString       := qTmp.FieldByName('secenek_3_risk').AsString;
+        qSoru.FieldByName('secenek_4').AsString            := qTmp.FieldByName('secenek_4').AsString;
+        qSoru.FieldByName('secenek_4_sonuc').AsString      := qTmp.FieldByName('secenek_4_sonuc').AsString;
+        qSoru.FieldByName('secenek_4_riskseviye').AsString := qTmp.FieldByName('secenek_4_riskseviye').AsString;
+        qSoru.FieldByName('secenek_4_risk').AsString       := qTmp.FieldByName('secenek_4_risk').AsString;
+        qSoru.FieldByName('secenek_5').AsString            := qTmp.FieldByName('secenek_5').AsString;
+        qSoru.FieldByName('secenek_5_sonuc').AsString      := qTmp.FieldByName('secenek_5_sonuc').AsString;
+        qSoru.FieldByName('secenek_5_riskseviye').AsString := qTmp.FieldByName('secenek_5_riskseviye').AsString;
+        qSoru.FieldByName('secenek_5_risk').AsString       := qTmp.FieldByName('secenek_5_risk').AsString;
+        qSoru.FieldByName('referans').AsString             := qTmp.FieldByName('referans').AsString;
+      end;
+      SecenekleriGoster;
+    end;
+    YardimKw := 'EDanismanSoruYeniKayit';
+  end;
+
+  ActiveControl := edSoru;
+  Result := ShowModal;
+end;
+
+
+function TfrmEDanismanSoruTanim.ListToStr(ATable: TVirtualTable): String;
+var
+  sTmp : String;
+begin
+  sTmp := '';
+  ATable.First;
+  while not ATable.EOF do
+  begin
+    sTmp := sTmp + ATable.FieldByName('id').AsString + ',';
+    ATable.Next;
+  end;
+
+  if Length(sTmp) > 0 then System.Delete(sTmp, Length(sTmp), 1);
+  Result := sTmp;
+end;
+
+procedure TfrmEDanismanSoruTanim.SecenekleriDuzenle;
+var
+  i, j: integer;
+begin
+  i := 1;
+  tblSecenek.first;
+  while not tblSecenek.Eof do
+  begin
+    qSoru.fieldByName('secenek_' + IntToStr(i)).AsString                 := tblSecenek.fieldByName('secenek').AsString ;
+    qSoru.fieldByName('secenek_' + IntToStr(i) + '_sonuc').AsString      := tblSecenek.fieldByName('sonuc').AsString;
+    qSoru.fieldByName('secenek_' + IntToStr(i) + '_riskseviye').AsString := tblSecenek.fieldByName('riskseviye').AsString;
+    qSoru.fieldByName('secenek_' + IntToStr(i) + '_risk').AsString        := tblSecenek.fieldByName('risk').AsString;
+    i := i + 1;
+    tblSecenek.Next;
+  end;
+
+  for j:=i to 5 do
+  begin
+    qSoru.fieldByName('secenek_' + IntToStr(j)).AsString := '';
+    qSoru.fieldByName('secenek_' + IntToStr(j) + '_sonuc').AsString := '';
+    qSoru.fieldByName('secenek_' + IntToStr(i) + '_riskseviye').AsString := '';
+    qSoru.fieldByName('secenek_' + IntToStr(i) + '_risk').AsString        := '';
+  end;
+end;
+
+procedure TfrmEDanismanSoruTanim.SecenekleriGoster;
+var
+  i: integer;
+begin
+  if not tblSecenek.Active then tblSecenek.Open;
+  tblSecenek.First;
+  while not tblSecenek.Eof do
+    tblSecenek.Delete;
+
+  for i := 1 to 5 do
+    if qSoru.fieldByName('secenek_' + IntToStr(i)).AsString <> '' then
+    begin
+      tblSecenek.Insert;
+      tblSecenek.fieldByName('no').AsInteger        := i;
+      tblSecenek.fieldByName('secenek').AsString    := qSoru.fieldByName('secenek_' + IntToStr(i)).AsString;
+      tblSecenek.fieldByName('sonuc').AsString      := qSoru.fieldByName('secenek_' + IntToStr(i) + '_sonuc').AsString;
+      tblSecenek.fieldByName('riskseviye').AsString := qSoru.fieldByName('secenek_' + IntToStr(i) + '_riskseviye').AsString;
+      tblSecenek.fieldByName('risk').AsString       := qSoru.fieldByName('secenek_' + IntToStr(i) + '_risk').AsString;
+      tblSecenek.Post;
+    end;
+  tblSecenek.IndexFieldNames := '"no" ASC';
+end;
+
+procedure TfrmEDanismanSoruTanim.SecenekSilControl(Sender: TComponent;
+  Res: Integer);
+begin
+  if Res <> mrYes then Exit;
+  // Added by TEVFIK 8.06.2023 16:42:20
+  if tblSecenek.RecordCount > 0 then
+  begin
+    qSoru.FieldByName('secenek_' + tblSecenek.FieldByName('no').AsString).AsString            := '';
+    qSoru.FieldByName('secenek_' + tblSecenek.FieldByName('no').AsString + '_sonuc').AsString := '';
+    qSoru.FieldByName('secenek_' + tblSecenek.FieldByName('no').AsString + '_riskseviye').AsString := '';
+    qSoru.FieldByName('secenek_' + tblSecenek.FieldByName('no').AsString + '_risk').AsString := '';
+    if tblSecenek.RecordCount> 0 then tblSecenek.Delete;
+  end
+  else
+  begin
+    MessageDlg('Silinecek kayýt bulunamadý!', mtWarning, [mbOK]);
+  end;
+end;
+
+procedure TfrmEDanismanSoruTanim.StrToList(ATable: TVirtualTable; aStr: String);
+var
+  sTmp: String;
+begin
+  if aTable.State = dsInactive then
+    aTable.Open;
+  ATable.First;
+  while not ATable.EOF do
+    aTable.Delete;
+
+  if aStr = '' then
+    exit;
+
+  if astr[length(astr)] <> ',' then
+    astr := astr + ',';
+
+  QueryOpen(qTmp, 'SELECT id, title FROM sys_deptdef WHERE mc_id = ' + IntToStr(MainMod.MCID));
+
+  while aStr <> '' do
+  begin
+    stmp := copy(astr, 1, pos(',', astr, 1)-1);
+    Delete(astr, 1, pos(',', astr, 1));
+    if qTmp.Locate('id', stmp, []) then
+    begin
+      aTable.insert;
+      aTable.FieldByName('id').AsInteger := qTmp.Fields[0].AsInteger;
+      aTable.FieldByName('name').AsString := qTmp.Fields[1].AsString;
+      aTable.Post;
+    end;
+  end;
+end;
+
+procedure TfrmEDanismanSoruTanim.UniBitBtn1Click(Sender: TObject);
+begin
+  frmHelpPage.Exec(YardimKw);
+end;
+
+procedure TfrmEDanismanSoruTanim.UniFormBeforeShow(Sender: TObject);
+begin
+  lbIDY.Caption := MainMod.KullaniciGetir(qSoru.FieldByName('idy').AsString);
+  lbSDY.Caption := MainMod.KullaniciGetir(qSoru.FieldByName('sdy').AsString);
+
+  if dsSoru.State = dsEdit then
+  begin
+    if lbIDY.Text = '' then lbIDY.Text := 'SÝSTEM';
+    if lbSDY.Text = '' then lbSDY.Text := 'SÝSTEM';
+  end;
+
+  if qSoru.FieldByName('idt').AsString = '' then lbIDT.Caption := ''
+   else lbIDT.Caption := FormatDateTime('dd.mm.yyyy hh:nn:ss', qSoru.FieldByName('idt').AsDateTime);
+  if qSoru.FieldByName('sdt').AsString = '' then lbSDT.Caption := ''
+   else lbSDT.Caption := FormatDateTime('dd.mm.yyyy hh:nn:ss', qSoru.FieldByName('sdt').AsDateTime);
+  qFonks.Open;
+end;
+
+end.
