@@ -1,0 +1,18 @@
+PersonID
+Adı Soyadı
+Eposta
+Telefon cep
+AsliUnvan (ünvan olabilir mi diye sorulacak)
+Aktif
+Username 
+Pozisyon (rol için) -> Eklenecek
+
+ubystoken
+
+token doğruysa eğer direkt kullanıcı sisteme giriş yapılsın sorun yok dendi. (bence bu sorun olur)
+
+portalda gözüken her bir birim için alan isteniyor. açık rızalar vs ona göre alınsın. kategorizasyon olarak isteniyor. ( bunu anlamadım )
+
+portalda gözüken örneğin Bilgi İşlem D. Başk. kendi uygulamasında bu şekilde olmayabilirmiş ve bunun dinamik olması gerekiyormuş talepleri bu yönde.
+
+belli başlı süreçlere mesela aydınlatma metni vs olan süreçlerde web app url isteniyor kendileri de ona göre dinamik şekilde aydınlatma ve açık rızaları gösterecekler
